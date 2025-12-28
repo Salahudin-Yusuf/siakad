@@ -18,11 +18,16 @@ public class Siakad {
 
         int pilihan;
 
-        Dosen dosen1 = new DosenTetap("Budi", "19800101");
+        // Dosen dosen1 = new DosenTetap("Budi", "19800101");
 
-        System.out.println("===== TESTING ABSENSI DOSEN =====");
-        dosen1.tampilDataDosen();
-        dosen1.absen();
+        // System.out.println("===== TESTING ABSENSI DOSEN =====");
+        // dosen1.tampilDataDosen();
+        // dosen1.absen();
+        DosenTetap dosenYuliana = new DosenTetap("Yuliana", "20001");
+
+        System.out.println("===== TESTING INTERFACE =====");
+        dosenYuliana.tambahData();
+        dosenYuliana.ubahData();
 
         // menu utama menggunakan do-while(Perulangan)
         do {
