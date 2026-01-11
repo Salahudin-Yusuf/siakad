@@ -61,4 +61,12 @@ public abstract class Dosen {
         this.nama = nama;
     }
 
+    public String getNidn() {
+        return nidn;
+    }
+
+    public void setNidn(String nidn) {
+        this.nidn = nidn;
+    }
+
 }

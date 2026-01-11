@@ -1,6 +1,15 @@
 package siakad;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
+
+import siakad.Mahasiswa.StatusMahasiswa;
+import siakad.Mahasiswa.statusMahasiswa;
 
 public class Siakad {
     // array dan scanner
@@ -8,26 +17,89 @@ public class Siakad {
     static Mahasiswa[] daftarMhs = new Mahasiswa[100];
     static int jumlahMhs = 0;
     
+    static void simpanDataKeFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data_mahasiswa.txt"))) {
+            for (int i = 0; i < jumlahMhs; i++) {
+                Mahasiswa m = daftarMhs[i];
+                // Format: NIM;Nama;Prodi;IPK;SKKM;Umur;Status;NamaDosen;NidnDosen
+                String dosenNama = (m.getDosenWali() != null) ? m.getDosenWali().getNama() : "-";
+                String dosenNidn = (m.getDosenWali() != null) ? m.getDosenWali().getNidn() : "-";
     
+                writer.write(m.getNim() + ";" + 
+                            m.getNama() + ";" + 
+                            m.getProdi() + ";" + 
+                            m.getIpk() + ";" + 
+                            m.getSkkm() + ";" + 
+                            m.getUmur() + ";" + 
+                            m.getStatus() + ";" + 
+                            dosenNama + ";" + 
+                            dosenNidn);
+                writer.newLine();
+            }
+            System.out.println("Data berhasil disimpan ke file.");
+        } catch (IOException e) {
+            System.err.println("Gagal menyimpan data: " + e.getMessage());
+        }
+    }
+
+    // Method untuk membaca data dari file (Exception Handling)
+    static void bacaDataDariFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("data_mahasiswa.txt"))) {
+            String baris;
+            while ((baris = reader.readLine()) != null) {
+                String[] data = baris.split(";");
+                
+                // Parsing data mahasiswa
+                String nim = data[0];
+                String nama = data[1];
+                String prodi = data[2];
+                Double ipk = Double.valueOf(data[3]);
+                Integer skkm = Integer.valueOf(data[4]);
+                Integer umur = Integer.valueOf(data[5]);
+                StatusMahasiswa status = StatusMahasiswa.valueOf(data[6]);
+                
+                // Buat objek mahasiswa
+                Mahasiswa m = new MahasiswaReguler(nim, nama, prodi, ipk, skkm, umur, status);
+                
+                // Ambil data dosen (Indeks 7 dan 8)
+                if (data.length > 8) {
+                    String namaDosen = data[7];
+                    String nidnDosen = data[8];
+                    if (!namaDosen.equals("-")) {
+                        Dosen dosenWali = new DosenTetap(namaDosen, nidnDosen);
+                        m.setDosenWali(dosenWali);
+                    }
+                }
+                
+                daftarMhs[jumlahMhs++] = m;
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Sistem: Database belum ada, memulai sesi baru.");
+        } catch (Exception e) {
+            System.out.println("Sistem: Gagal memuat data dosen. Error: " + e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
+        bacaDataDariFile();
         // Inisialisasi data
-        Dosen dosenAndi = new DosenTetap("Yuliana", "20001");
-        Mahasiswa andi = new MahasiswaReguler("2310001", "Andi Pratama", "Informatika", 3.75, 50, 19); 
-        andi.setDosenWali(dosenAndi);
-        daftarMhs[jumlahMhs++] = andi;
+        // Dosen dosenAndi = new DosenTetap("Yuliana", "20001");
+        // Mahasiswa andi = new MahasiswaReguler("2310001", "Andi Pratama", "Informatika", 3.75, 50, 19, StatusMahasiswa.AKTIF); 
+        // andi.setDosenWali(dosenAndi);
+        // daftarMhs[jumlahMhs++] = andi;
 
         int pilihan;
 
-        // Dosen dosen1 = new DosenTetap("Budi", "19800101");
+        // // Dosen dosen1 = new DosenTetap("Budi", "19800101");
 
-        // System.out.println("===== TESTING ABSENSI DOSEN =====");
-        // dosen1.tampilDataDosen();
-        // dosen1.absen();
-        DosenTetap dosenYuliana = new DosenTetap("Yuliana", "20001");
+        // // System.out.println("===== TESTING ABSENSI DOSEN =====");
+        // // dosen1.tampilDataDosen();
+        // // dosen1.absen();
+        // DosenTetap dosenYuliana = new DosenTetap("Yuliana", "20001");
 
-        System.out.println("===== TESTING INTERFACE =====");
-        dosenYuliana.tambahData();
-        dosenYuliana.ubahData();
+        // System.out.println("===== TESTING INTERFACE =====");
+        // dosenYuliana.tambahData();
+        // dosenYuliana.ubahData();
 
         // menu utama menggunakan do-while(Perulangan)
         do {
@@ -62,7 +134,8 @@ public class Siakad {
             } else if (pilihan == 6) {
                 menuKRS();
             } else if (pilihan == 0) {
-                System.out.println("Keluar dari program...");
+                simpanDataKeFile();
+                System.out.println("Data tersimpan. Keluar dari program...");
             } else {
                 System.out.println("Pilihan tidak valid!");
             }
@@ -177,6 +250,7 @@ public class Siakad {
             System.out.println("\n===== DAFTAR MAHASISWA =====");
             for (int i = 0; i < jumlahMhs; i++) {
                 System.out.println((i + 1) + ". " + daftarMhs[i].getNama() + " (" + daftarMhs[i].getNim() + ")");
+                System.out.println("Status : " + daftarMhs[i].getStatus());
                 daftarMhs[i].tampilData();
                 System.out.println("-------------------------------");
             }
@@ -277,6 +351,33 @@ public class Siakad {
         int skkm = input.nextInt();
         input.nextLine();
 
+
+        System.out.println("Pilih Status Mahasiswa:");
+        System.out.println("1. AKTIF");
+        System.out.println("2. CUTI");
+        System.out.println("3. LULUS");
+        System.out.print("Pilihan (1-3): ");
+        int pilStatus = input.nextInt();
+        input.nextLine();
+
+        // Tentukan enum berdasarkan input
+        StatusMahasiswa statusTerpilih;
+        switch (pilStatus) {
+            case 1: statusTerpilih = StatusMahasiswa.AKTIF; break;
+            case 2: statusTerpilih = StatusMahasiswa.CUTI; break;
+            case 3: statusTerpilih = StatusMahasiswa.LULUS; break;
+            default:
+                statusTerpilih = StatusMahasiswa.AKTIF;
+                System.out.println("Pilihan tidak valid, status otomatis: AKTIF");
+        }
+
+        // Panggil constructor dengan parameter Enum (statusTerpilih), bukan int (pilStatus)
+        Mahasiswa mhsBaru = new MahasiswaReguler(nim, nama, prodi, ipk, skkm, umur, statusTerpilih);        
+
+        if (mhsBaru.getIpk() == null || mhsBaru.getUmur() == null) {
+            return;
+        }
+        
         System.out.print("Masukkan Nama Dosen Wali: ");
         String namaDosen = input.nextLine();
         System.out.print("Masukkan NIDN Dosen Wali: ");
@@ -284,18 +385,12 @@ public class Siakad {
         
         Dosen dosenWali = new DosenTetap(namaDosen, nidn);
 
-        Mahasiswa mhsBaru = new MahasiswaReguler(nim, nama, prodi, ipk, skkm, umur);
-
-        if (mhsBaru.getIpk() == null || mhsBaru.getUmur() == null) {
-            return;
-        }
-        
-        
         mhsBaru.setDosenWali(dosenWali); 
 
         daftarMhs[jumlahMhs] = mhsBaru;
         jumlahMhs++;
 
+        simpanDataKeFile();
         System.out.println("Mahasiswa berhasil ditambahkan beserta dosen walinya!");
 
     }

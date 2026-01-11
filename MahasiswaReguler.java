@@ -9,8 +9,8 @@ public class MahasiswaReguler extends Mahasiswa{
     }
 
     // Konstruktor mahasiswa reguler
-    public MahasiswaReguler(String nim, String nama, String prodi, Double ipk, Integer skkm, Integer umur) {
-        super(nim, nama, prodi, ipk, skkm, umur);
+    public MahasiswaReguler(String nim, String nama, String prodi, Double ipk, Integer skkm, Integer umur, StatusMahasiswa status) {
+        super(nim, nama, prodi, ipk, skkm, umur, status);
     }
 
     public int getIdKategoriKelas() {

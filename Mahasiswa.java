@@ -8,9 +8,18 @@ public abstract class Mahasiswa {
     protected String nim;
     protected String nama;
     protected String prodi;
-    protected Double ipk;
-    protected Integer skkm;
-    protected Integer umur;
+    protected Double ipk; // wrapper class
+    protected Integer skkm; // wrapper class
+    protected Integer umur; // wrapper class
+
+
+    enum StatusMahasiswa {
+        AKTIF,
+        CUTI,
+        LULUS
+    }
+
+    protected StatusMahasiswa status;
     
     // Atribut untuk KRS
     private List<MataKuliah> krs;
@@ -29,7 +38,7 @@ public abstract class Mahasiswa {
     }
 
     // Konstruktor mahasiswa
-    public Mahasiswa(String nim, String nama, String prodi, Double ipk, Integer skkm, Integer umur) {
+    public Mahasiswa(String nim, String nama, String prodi, Double ipk, Integer skkm, Integer umur, StatusMahasiswa status) {
         this.nim = nim;
         this.nama = nama;
         this.prodi = prodi;
@@ -37,11 +46,20 @@ public abstract class Mahasiswa {
         this.dosenWali = null;
         this.krs = new ArrayList<>();
         this.jumlahKrs = 0;
+        this.status = status;
 
         setIpk(ipk); 
         setUmur(umur);
     }
     
+    public StatusMahasiswa getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusMahasiswa status) {
+        this.status = status;
+    }
+
     // Getter nim
     public String getNim() {
         return nim;
